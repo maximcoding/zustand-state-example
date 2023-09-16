@@ -1,4 +1,9 @@
 ```
+import {immer} from "zustand/middleware/immer";
+import {createJSONStorage, persist} from "zustand/middleware";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {create} from "zustand";
+
 interface User {
   id: string
   username: string
@@ -33,16 +38,13 @@ const UserState = immer<UserState>((set, get, api) => ({
       state.users[userId].active = !state.users[userId].active
     }),
 }));
-
 const UNIQUE_USERS_KEY = 'user-storage'
-
-
-export const persistUsersState = persist(UserState, {
+export const persisted = persist(UserState, {
   name: UNIQUE_USERS_KEY,
   storage: createJSONStorage(() => AsyncStorage),
   onRehydrateStorage: () => (state) => {
   }
 })
 
-export const useUsersStore = create<State & Actions>()(persistUsersState)
+export const useUsersStore = create<UserState>()(persisted)
 ```
