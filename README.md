@@ -1,63 +1,48 @@
 ```
-import {immer} from "zustand/middleware/immer";
-import {createJSONStorage, persist} from "zustand/middleware";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import {create} from "zustand";
-
-
-const UNIQUE_TODO_KEY = 'todo-storage'
-
-interface Todo {
+interface User {
   id: string
-  title: string
-  done: boolean
+  username: string
+  active: boolean
 }
 
 type State = {
-  todos: Record<string, Todo>
+  users: Record<string, User>
 }
 
 type Actions = {
-  toggleTodo: (todoId: string) => void
+  toggleActive: (userId: string) => void
 }
 
-export type TodoState = State & Actions;
+export type UserState = State & Actions;
 
-const TodoState = immer<TodoState>((set, get, api) => ({
-  todos: {
+const UserState = immer<UserState>((set, get, api) => ({
+  users: {
     '82471c5f-4207-4b1d-abcb-b98547e01a3e': {
       id: '82471c5f-4207-4b1d-abcb-b98547e01a3e',
-      title: 'Learn Zustand',
-      done: false,
+      username: 'Learn Zustand',
+      active: false,
     },
     '354ee16c-bfdd-44d3-afa9-e93679bda367': {
       id: '354ee16c-bfdd-44d3-afa9-e93679bda367',
-      title: 'Learn Jotai',
-      done: false,
-    },
-    '771c85c5-46ea-4a11-8fed-36cc2c7be344': {
-      id: '771c85c5-46ea-4a11-8fed-36cc2c7be344',
-      title: 'Learn Valtio',
-      done: false,
-    },
-    '363a4bac-083f-47f7-a0a2-aeeee153a99c': {
-      id: '363a4bac-083f-47f7-a0a2-aeeee153a99c',
-      title: 'Learn Signals',
-      done: false,
+      username: 'Learn Jotai',
+      active: false,
     },
   },
-  toggleTodo: (todoId: string) =>
+  toggleActive: (userId: string) =>
     set((state) => {
-      state.todos[todoId].done = !state.todos[todoId].done
+      state.users[userId].active = !state.users[userId].active
     }),
 }));
 
-export const persistTodoStore = persist(TodoState, {
-  name: UNIQUE_TODO_KEY,
+const UNIQUE_USERS_KEY = 'user-storage'
+
+
+export const persistUsersState = persist(UserState, {
+  name: UNIQUE_USERS_KEY,
   storage: createJSONStorage(() => AsyncStorage),
   onRehydrateStorage: () => (state) => {
   }
 })
 
-export const useTodoStore = create<State & Actions>()(persistTodoStore)
+export const useUsersStore = create<State & Actions>()(persistUsersState)
 ```
